@@ -1,32 +1,54 @@
-const express =require('express')
-const cors =require('cors')
-const {connect} = require('mongoose')
-require('dotenv').config()
-const upload=require('express-fileupload')
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import Layout from './components/Layout';
+import ErrorPage from './pages/ErrorPage'
+import Home from './pages/Home'
+import PostDetail from './pages/PostDetail'
+import Register from './pages/Register'
+import Login from './pages/Login'
+import UserProfile from './pages/UserProfile'
+import CreatePost from './pages/CreatePost'
+import EditPost from './pages/EditPost'
+import DeletePost from './pages/DeletePost'
+import CategoryPosts from './pages/CategoryPosts'
+import Authors from './pages/Authors'
+import AuthorPosts from './pages/AuthorPosts'
+import Dashboard from './pages/Dashboard'
+import Logout from './pages/Logout'
+import UserProvider from './context/userContext';
 
+const router=createBrowserRouter([
+  {
+  path: "/",
+  element:<UserProvider><Layout/></UserProvider> ,
+  errorElement: <ErrorPage/>,
+  children:[
+    {index: true, element: <Home/>},
+    {path: "posts/:id", element: <PostDetail />},
+    {path: "register", element: <Register/>},
+    {path: "login", element: <Login/>},
+    {path: "profile/:id", element: <UserProfile/>},
+    {path: "authors", element: <Authors/>},
+    {path: "create", element: <CreatePost/>},
+    {path: "posts/categories/:category", element: <CategoryPosts />},
+    {path: "posts/users/:id" ,element: <AuthorPosts />},
+    {path: "myposts/:id", element: <Dashboard />},
+    {path: "posts/:id/edit", element: <EditPost/>},
+    {path: "posts/:id/delete", element: <DeletePost/>},
 
-const userRoutes=require('./routes/userRoutes')
-const postRoutes=require('./routes/postRoutes')
-const {notFound ,errorHandler}=require('./middleware/errorMiddleware')
+    {path: "logout" ,element:<Logout/>},
+  ]
+  }
 
-
-
-const app =express()
-app.use(express.json({extended:true}))
-app.use(express.urlencoded({extended:true}))
-app.use(cors({credentials: true,origin:"http://localhost:3000"}))
-app.use(upload())
-app.use('/uploads',express.static(__dirname+ '/uploads'))
-
-
-app.use('/api/users',userRoutes)
-app.use('/api/posts',postRoutes)
-
-
-app.use(notFound)
-app.use(errorHandler)
-
-connect(process.env.MONGO_URI).then(app.listen(process.env.PORT || 5000,() => console.log(`Server started on 
-port ${process.env.PORT}`))).catch(error =>{console.log(error)})
+])
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <RouterProvider router={router}/>
+    
+  </React.StrictMode>
+);
 
 
